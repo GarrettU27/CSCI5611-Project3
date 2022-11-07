@@ -1,4 +1,4 @@
-Arm arm;
+FABRIK f;
 PRM prm = new PRM();
 
 //Root
@@ -8,18 +8,20 @@ boolean paused = true;
 
 float armW = 20;
 
-int numberOfJoints = 15;
-float lengthOfJoints = 100;
+int numberOfPoints = 25;
+float lengthOfPoints = 100;
 
 
 float maxVelocity = 200;
 float minVelocity = 50;
 float maxAcceleration = 300;
 
+float tolerance = 1;
+
 int strokeWidth = 2;
 
 // PRM STATE
-int numObstacles = 10;
+int numObstacles = 50 ;
 int numNodes  = 200;
 
 static int maxNumObstacles = 1000;

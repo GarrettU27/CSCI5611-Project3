@@ -4,26 +4,28 @@ void setup() {
   size(640, 480);
   surface.setTitle("Inverse Kinematics [CSCI 5611 Project 3]");
 
-  Joint[] joints = new Joint[numberOfJoints];
   Vec2 position = root;
+  Vec2[] positions = new Vec2[numberOfPoints];
+  float[] distances = new float[numberOfPoints - 1];
 
-  for (int i = 0; i < numberOfJoints; i++) {
-    joints[i] = new Joint(position, 0.0, lengthOfJoints);
-    position = new Vec2(cos(0)*lengthOfJoints, sin(0)*lengthOfJoints).plus(position);
+  for (int i = 0; i < numberOfPoints; i++) {
+    positions[i] = position;
+    position = new Vec2(cos(0)*lengthOfPoints, sin(0)*lengthOfPoints).plus(position);
+  }
+  
+  for (int i = 0; i < numberOfPoints - 1; i++) {
+    distances[i] = lengthOfPoints;
   }
 
-  Vec2 endPoint = new Vec2(cos(0)*lengthOfJoints, sin(0)*lengthOfJoints).plus(joints[joints.length -1].position);
-
-  arm = new Arm(joints, endPoint);
-  
+  f = new FABRIK(positions, distances);  
   prm.setup();
 }
 
 void draw() {
   background(255, 255, 255);
 
-  prm.draw();
-  arm.draw();
+  //prm.draw();
+  f.draw();
 
   fill(0, 0, 0); //Goal/mouse
   pushMatrix();
