@@ -24,9 +24,9 @@ void setup() {
 void draw() {
   background(255, 255, 255);
 
-  //prm.draw();
+  prm.draw();
   f.draw();
-
+ 
   fill(0, 0, 0); //Goal/mouse
   pushMatrix();
   translate(mouseX, mouseY);

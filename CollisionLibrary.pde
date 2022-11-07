@@ -32,6 +32,33 @@ class hitInfo {
   public float t = 9999999;
 }
 
+//https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+boolean rayCircleListIntersect(Vec2[] centers, float[] radii, Vec2 A, Vec2 B) {
+  for (int i = 0; i < centers.length; i++) {
+    Vec2 AB = B.minus(A);
+    Vec2 AC = centers[i].minus(A);
+    Vec2 AD = projAB(AC, AB);
+    Vec2 D = AD.plus(A);
+    
+    float k = Math.abs(AB.x) > Math.abs(AB.y) ? AD.x / AB.x : AD.y / AB.y;
+    
+    // Check if D is off either end of the line segment
+    double dist = 0;
+    if (k <= 0.0) {
+        dist = AC.length();
+        return dist < radii[i];
+    } else if (k >= 1.0) {
+        dist = centers[i].minus(B).length();
+        return dist < radii[i];
+    }
+    if (D.minus(centers[i]).length() < radii[i]) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 hitInfo rayCircleIntersect(Vec2 center, float r, Vec2 l_start, Vec2 l_dir, float max_t) {
   hitInfo hit = new hitInfo();
 

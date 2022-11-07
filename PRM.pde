@@ -1,5 +1,5 @@
 Vec2 generateRandomPosition() {
-  return new Vec2(random(width), random(height));
+  return new Vec2(random(width/4, 3*width/4), random(height/4, 3* height/4));
 }
 
 //Generate non-colliding PRM nodes
@@ -145,13 +145,13 @@ public class PRM {
     }
 
     //Draw graph
-    stroke(50, 50, 50);
-    strokeWeight(1);
-    for (int i = 0; i < numNodes; i++) {
-      for (int j : neighbors[i]) {
-        line(nodePos[i].x, nodePos[i].y, nodePos[j].x, nodePos[j].y);
-      }
-    }
+    //stroke(50, 50, 50);
+    //strokeWeight(1);
+    //for (int i = 0; i < numNodes; i++) {
+    //  for (int j : neighbors[i]) {
+    //    line(nodePos[i].x, nodePos[i].y, nodePos[j].x, nodePos[j].y);
+    //  }
+    //}
 
     stroke(255, 255, 255);
     strokeWeight(5);

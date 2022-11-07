@@ -21,7 +21,7 @@ float tolerance = 1;
 int strokeWidth = 2;
 
 // PRM STATE
-int numObstacles = 50 ;
+int numObstacles = 20;
 int numNodes  = 200;
 
 static int maxNumObstacles = 1000;
