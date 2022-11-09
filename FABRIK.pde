@@ -1,14 +1,14 @@
 public class FABRIK {
-  Vec2[] positions;
+  Vec3[] positions;
   float[] distances;
   
-  public FABRIK(Vec2[] positions, float[] distances) {
+  public FABRIK(Vec3[] positions, float[] distances) {
     this.positions = positions;
     this.distances = distances;
   }
   
-  public void solve(Vec2 target) {
-    Vec2 root = positions[0];
+  public void solve(Vec3 target) {
+    Vec3 root = positions[0];
     float dist = root.distanceTo(target);
     
     float armLength = 0;
@@ -26,7 +26,7 @@ public class FABRIK {
     }
     //target is reachable
     else {
-      Vec2 b = positions[0];
+      Vec3 b = positions[0];
       
       float difference = positions[positions.length - 1].distanceTo(target);
       while (difference > tolerance) {
@@ -37,15 +37,25 @@ public class FABRIK {
           float lambda = distances[i]/r;
           positions[i] = positions[i+1].times(1-lambda).plus(positions[i].times(lambda));
           
-          // obstacle avoidance
-          if(rayCircleListIntersect(circlePos, circleRad, positions[i], positions[i+1])) {
-            positions[i] = positions[i+1].minus(positions[0]);
-            positions[i].setToLength(distances[i]);
+          if (i < distances.length - 1) {
+            Vec3 previousLink = positions[i+2].minus(positions[i+1]);
+            Vec3 nextLink = positions[i].minus(positions[i+1]);
+            Vec3 axisOfRotation = cross(previousLink, nextLink).normalized();
+            float angleBetween = acos(dot(previousLink.normalized(), nextLink.normalized()));
             
-            //while (rayCircleListIntersect(circlePos, circleRad, numObstacles, positions[i+1], positions[i].minus(positions[i+1]).normalized(), 0.1).hit) {
-            //  float angle = random(2*PI);
-            //  positions[i] = new Vec2(cos(angle)*distances[i], sin(angle)*distances[i]).plus(positions[i + 1]);
-            //}
+            if (angleBetween > angleUpperLimit || angleBetween < angleLowerLimit) {
+              float angleDifference;
+              
+              if (angleBetween > angleUpperLimit) {
+                angleDifference = angleUpperLimit - angleBetween;
+              } else {
+                angleDifference = angleBetween - angleLowerLimit;
+              }
+              
+              // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+              Vec3 rotatedVector = nextLink.times(cos(angleDifference)).plus(cross(axisOfRotation, nextLink).times(sin(angleDifference))).plus(axisOfRotation.times(dot(axisOfRotation, nextLink)).times(1 - cos(angleDifference)));
+              positions[i] = rotatedVector.plus(positions[i+1]);
+            }
           }
         }
         
@@ -56,15 +66,25 @@ public class FABRIK {
           float lambda = distances[i]/r;
           positions[i+1] = positions[i].times(1-lambda).plus(positions[i+1].times(lambda));
           
-          // obstacle avoidance
-          if(rayCircleListIntersect(circlePos, circleRad, positions[i], positions[i+1])) {
-            positions[i+1] = positions[i+1].minus(positions[0]);
-            positions[i+1].setToLength(distances[i]);
+          if (i > 0) {
+            Vec3 previousLink = positions[i-1].minus(positions[i]);
+            Vec3 nextLink = positions[i+1].minus(positions[i]);
+            Vec3 axisOfRotation = cross(previousLink, nextLink).normalized();
+            float angleBetween = acos(dot(previousLink.normalized(), nextLink.normalized()));
             
-            //while (rayCircleListIntersect(circlePos, circleRad, numObstacles, positions[i], positions[i+1].minus(positions[i]).normalized(), 0.1).hit) {
-            //  float angle = random(2*PI);
-            //  positions[i+1] = new Vec2(cos(angle)*distances[i], sin(angle)*distances[i]).plus(positions[i]);
-            //}
+            if (angleBetween > angleUpperLimit || angleBetween < angleLowerLimit) {
+              float angleDifference;
+              
+              if (angleBetween > angleUpperLimit) {
+                angleDifference = angleUpperLimit - angleBetween;
+              } else {
+                angleDifference = angleBetween - angleLowerLimit;
+              }
+              
+              // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+              Vec3 rotatedVector = nextLink.times(cos(angleDifference)).plus(cross(axisOfRotation, nextLink).times(sin(angleDifference))).plus(axisOfRotation.times(dot(axisOfRotation, nextLink)).times(1 - cos(angleDifference)));
+              positions[i + 1] = rotatedVector.plus(positions[i]);
+            }
           }
         }
         
@@ -74,7 +94,7 @@ public class FABRIK {
   }
   
   public void draw() {
-    Vec2 target = currentPos[0];
+    Vec3 target = new Vec3(150, -150, -150);
 
     if (!paused) {
       this.solve(target);
@@ -85,14 +105,19 @@ public class FABRIK {
 
     fill(180, 20, 40); //Root
     pushMatrix();
-    translate(positions[0].x, positions[0].y);
-    rect(-20, -20, 40, 40);
+    translate(positions[0].x - 20, positions[0].y, positions[0].z);
+    box(40);
     popMatrix();
 
     fill(10, 150, 40);
     for (int i = 0; i < positions.length - 1; i++) {
-      line(positions[i].x, positions[i].y, positions[i+1].x, positions[i+1].y);
-      circle(positions[i+1].x, positions[i+1].y, 10);
+      line(positions[i].x, positions[i].y, positions[i].z, positions[i+1].x, positions[i+1].y, positions[i+1].z);
+      pushMatrix();
+      noStroke();
+      translate(positions[i+1].x, positions[i+1].y, positions[i+1].z);
+      sphere(10);
+      stroke(strokeWidth);
+      popMatrix();
     }
 
     strokeWeight(0);
