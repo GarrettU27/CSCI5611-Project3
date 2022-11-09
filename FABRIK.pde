@@ -1,10 +1,12 @@
 public class FABRIK {
   Vec3[] positions;
   float[] distances;
+  color c;
   
-  public FABRIK(Vec3[] positions, float[] distances) {
+  public FABRIK(Vec3[] positions, float[] distances, color c) {
     this.positions = positions;
     this.distances = distances;
+    this.c = c;
   }
   
   public void solve(Vec3 target) {
@@ -29,7 +31,8 @@ public class FABRIK {
       Vec3 b = positions[0];
       
       float difference = positions[positions.length - 1].distanceTo(target);
-      while (difference > tolerance) {
+      int count = 0;
+      while (difference > tolerance && count < maxIterations) {
         //forward search
         positions[positions.length - 1] = target;
         for (int i = distances.length - 1; i >= 0; i--) {
@@ -89,13 +92,12 @@ public class FABRIK {
         }
         
         difference = positions[positions.length - 1].distanceTo(target);
+        count++;
       }
     }
   }
   
-  public void draw() {
-    Vec3 target = new Vec3(150, -150, -150);
-
+  public void draw(Vec3 target) {
     if (!paused) {
       this.solve(target);
     }
@@ -109,7 +111,7 @@ public class FABRIK {
     box(40);
     popMatrix();
 
-    fill(10, 150, 40);
+    fill(c);
     for (int i = 0; i < positions.length - 1; i++) {
       line(positions[i].x, positions[i].y, positions[i].z, positions[i+1].x, positions[i+1].y, positions[i+1].z);
       pushMatrix();

@@ -1,4 +1,5 @@
-FABRIK f;
+FABRIK f1, f2;
+Target t1, t2;
 Camera camera;
 
 //Root
@@ -11,10 +12,10 @@ float armW = 20;
 int numberOfPoints = 25;
 float lengthOfPoints = 100;
 
-float tolerance = 1;
+float tolerance = 10;
 int strokeWidth = 2;
 
-float angleLimit = PI/6;
+float angleLimit = PI/2;
 float angleUpperLimit = PI + angleLimit;
 float angleLowerLimit = PI - angleLimit;
 
