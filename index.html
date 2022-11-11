@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>CSCI 5611 Project 3</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <h1>Introduction</h1>
+    <p>
+      I am Garrett Udstrand (<a href="mailto:udstr013@umn.edu">udstr013@umn.edu</a>).
+      This is my website submission for Project 3 in CSCI 5611. The
+      example video of the project can be viewed below.
+    </p>
+
+    <video width="800" controls>
+      <source src="IK_General.mp4" type="video/mp4" />
+    </video>
+
+    <h1>Features</h1>
+    <p>
+      The project mainly features 
+    </p>
+
+    <h1>Project Features I Attempted</h1>
+    <h2>Single Agent Navigation</h2>
+    <p>
+      Obviously, this one is required. The rockets are all navigating a
+      cluttered, 2D environment. I use a PRM with A* to calculate the path, and
+      then smooth the path as the space ships simulate the movement. I also cap
+      the velocity and acceleration of the space ship at certain limits to make
+      the movement look natural. Slow downs near corners also help make the
+      movement look natural.
+    </p>
+    <h2>Improved Agent and Scene Rendering</h2>
+    <p>
+      I themed all the agents as space ships by using textured quads. I also
+      rendered the obstacles as asteroids using textured quads. However, they
+      have bounding spheres which are used for the collision and pathfinding
+      calculations. These are also displayed in the simulation. The bounding
+      geometry for the spaceship is the little force field around it and the
+      bounding geometry for the asteroid is the little atmosphere around it
+      (both are colored, transparent cirlces overlayed on top of their
+      respective quad).
+    </p>
+    <h2>Orientation Smoothing</h2>
+    <p>
+      The agents are rendered as space ships and have a clear front and back.
+      The front of the space ship (the nose of the rocket) is supposed to be
+      pointing in the same direction the ship is moving, so it looks more like
+      an actual rocket moving through space. The acceleration and velocity
+      calculations from before result in smooth rotations of the agent, even if
+      they can sometimes be fast.
+    </p>
+    <h2>Multiple Agents Planning</h2>
+    <p>
+      My simulation can support an arbitrary number of agents, though the
+      example video is rendered with 10. They all get their own start positions
+      and end goals, which they all plan separate paths for and then move to
+      independently. I did not attempt the Crowd Simulation challenge, however,
+      so the agents do not make an attempt to avoid each other.
+    </p>
+
+    <h1>Code</h1>
+    <p>
+      The simulation was written using
+      <a href="https://processing.org/">processing</a> and
+      <a
+        href="https://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html"
+        >PriorityQueue</a
+      >
+      from the <a href="https://www.java.com/en/">Java</a> standard library. The
+      test harness for this project was used as a base for creating the
+      simulation, but it has been significantly modified. Almost none of the
+      original code of the test harness remains.
+    </p>
+    <p>
+      The source code can be
+      <a href="https://github.com/GarrettU27/CSCI5611-Project1">
+        found on GitHub here</a
+      >. You can also
+      <a href="https://github.com/GarrettU27/CSCI5611-Project1/zipball/master">
+        download a ZIP of the repository here.
+      </a>
+    </p>
+
+    <h1>Difficulties</h1>
+    <h2>A* With Arbitrary Start and Goal Positions</h2>
+    <p>
+      Implementing A* normally was not too problematic for me. You just roughly
+      follow the pseudo code with your own logic and you end up with the proper
+      results. But, the arbitrary start and goal positions meant that I had to
+      slighly modify A* to get the results I wanted. While you can just add the
+      start and goal positions as nodes in the PRM, and then re-generate the
+      connections for the graph, that is really slow, and was not fast enough
+      for the speeds required for this simulation.
+    </p>
+    <p>
+      Instead, my solution to get A* to work ultimately looked like the
+      following. First, determine all the nodes that could be a neighbor of the
+      start, and add them to the fringe (open set in A*). These nodes had to
+      have the cost for going from the start to them added on initially, as
+      well. Basically, instead of starting the algorithm with one node, we start
+      the algorithm like we're already one step in, and we start with several
+      nodes. Second, determine all the nodes that could be a neighbor of the
+      goal and add them to a list of goal nodes. Third, whenever a goal node is
+      encountered, add a node to the fringe with the proper cost to go to the
+      goal, and an ID that marks it as the goal node. Finally, whenever a node
+      is pulled off the fringe with the goal node ID, end the algorithm.
+    </p>
+    <p>
+      Overall, this works basically the same as how A* runs normally, but I
+      avoided creating new nodes for the start and goal and regenerating all the
+      edges in the graph. This sort of solution was kind of discussed in class,
+      but even with the class discussion and my own understanding of the
+      solution, it still took a while to debug and get it working.
+    </p>
+    <h2>Smooth and Collision Free Motion</h2>
+    <p>
+      Simulating smooth motion was not too difficult, as that is something we've
+      covered in class and in class activities before. However, smooth, weighty
+      motion that looks good is not very good at following a path. An agent with
+      that sort of motion frequently overshoots corners, is forced to back track
+      and hits obstacles. It took a lot of work and tinkering to figure out how
+      to make motion that looks good and natural while still following the path
+      for the most part. Ultimately, the fix that helped the most in making it
+      happen was forcing the agent to slow to some minimum velocity when it
+      reached corners. Thus, it could still have weighty movement, but it
+      couldn't overshoot corners, which was the main problem.
+    </p>
+    <p>
+      There was also issues with the agent fidgeting and jiggling sporadically
+      and randomly, but forcing the acceleration to be over some minimum amount
+      and changing the renderer from the default to P2D fixed up most of those
+      issues.
+    </p>
+    <h2>Texture Rendering</h2>
+    <p>
+      Processing loads images in as an array of pixels to then be rendered as
+      textures or plain images. As can be imagined, large images have a lot of
+      pixels and thus take a significant amount of processing power. I didn't
+      realize this at first, and tried to load an image that was 3000 by 5000
+      pixels. The performance was terrible and it took me a significant amount
+      of time to figure out why. After that, resizing the image while
+      maintaining a good resolution was a concern, but luckily Windows' Photos
+      app was able to resize the image for me properly.
+    </p>
+
+    <script src="" async defer></script>
+  </body>
+</html>

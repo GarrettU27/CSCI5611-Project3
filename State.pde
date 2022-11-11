@@ -1,6 +1,8 @@
 FABRIK f1, f2;
 Target t1, t2;
+Target selected;
 Camera camera;
+float targetRadius = 30;
 
 //Root
 Vec3 root = new Vec3(50, 50, 0);
