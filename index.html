@@ -4,162 +4,425 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>CSCI 5611 Project 3</title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  </head>
-  <body>
-    <!--[if lt IE 7]>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CSCI 5611 Project 3</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+
+<body>
+  <!--[if lt IE 7]>
       <p class="browsehappy">
         You are using an <strong>outdated</strong> browser. Please
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-    <h1>Introduction</h1>
-    <p>
-      I am Garrett Udstrand (<a href="mailto:udstr013@umn.edu">udstr013@umn.edu</a>).
-      This is my website submission for Project 3 in CSCI 5611. The
-      example video of the project can be viewed below.
-    </p>
+  <h1>Introduction</h1>
+  <p>
+    I am Garrett Udstrand (<a href="mailto:udstr013@umn.edu">udstr013@umn.edu</a>).
+    This is my website submission for Project 3 in CSCI 5611. The
+    example video of the project can be viewed below.
+  </p>
 
-    <video width="800" controls>
-      <source src="IK_General.mp4" type="video/mp4" />
-    </video>
+  <video width="800" controls>
+    <source src="IK_General.mp4" type="video/mp4" />
+  </video>
 
-    <h1>Features</h1>
-    <p>
-      The project mainly features 
-    </p>
+  <h1>Features</h1>
+  <p>
+    The project mainly features an Inverse Kinematic (IK) solver. Two different
+    arms are simulated using this IK solver, and, even with 25 joints, it still
+    runs pretty smoothly. It also features the ability to move the goal points
+    that the arms are reaching towards by dragging them around with your mouse,
+    which is surprisingly difficult to make happen.
+  </p>
+  <p>
+    Running the project will start you with both arms in front of you attached to their
+    shared root (the red cube). Hitting the spacebar allows the arms to start moving and
+    they start heading towards their randomly chosen goals. One arm has blue spheres for
+    joints and the other has green spheres for joints. Both have large purple spheres that
+    they reach for. Hitting 'f' randomizes both goals again. The WASD keys are used to move
+    the camera, the arrow keys rotate the camera around and you can click and drag the purple
+    targets to move them.
+  </p>
 
-    <h1>Project Features I Attempted</h1>
-    <h2>Single Agent Navigation</h2>
-    <p>
-      Obviously, this one is required. The rockets are all navigating a
-      cluttered, 2D environment. I use a PRM with A* to calculate the path, and
-      then smooth the path as the space ships simulate the movement. I also cap
-      the velocity and acceleration of the space ship at certain limits to make
-      the movement look natural. Slow downs near corners also help make the
-      movement look natural.
-    </p>
-    <h2>Improved Agent and Scene Rendering</h2>
-    <p>
-      I themed all the agents as space ships by using textured quads. I also
-      rendered the obstacles as asteroids using textured quads. However, they
-      have bounding spheres which are used for the collision and pathfinding
-      calculations. These are also displayed in the simulation. The bounding
-      geometry for the spaceship is the little force field around it and the
-      bounding geometry for the asteroid is the little atmosphere around it
-      (both are colored, transparent cirlces overlayed on top of their
-      respective quad).
-    </p>
-    <h2>Orientation Smoothing</h2>
-    <p>
-      The agents are rendered as space ships and have a clear front and back.
-      The front of the space ship (the nose of the rocket) is supposed to be
-      pointing in the same direction the ship is moving, so it looks more like
-      an actual rocket moving through space. The acceleration and velocity
-      calculations from before result in smooth rotations of the agent, even if
-      they can sometimes be fast.
-    </p>
-    <h2>Multiple Agents Planning</h2>
-    <p>
-      My simulation can support an arbitrary number of agents, though the
-      example video is rendered with 10. They all get their own start positions
-      and end goals, which they all plan separate paths for and then move to
-      independently. I did not attempt the Crowd Simulation challenge, however,
-      so the agents do not make an attempt to avoid each other.
-    </p>
+  <h1>Project Features I Attempted</h1>
+  <h2>Single-Arm IK</h2>
+  <p>
+    Obviously, this one is required. As you will see in the next section, I extended
+    this single-arm IK to multi-arm IK, so, whenever you see both arms moving, you're
+    seeing the code for single-arm IK ran twice. I will discuss where you can see
+    single and muli-arm IK in the demonstration video in the next section.
+  </p>
+  <h2>Multi-Arm IK</h2>
+  <p>
+    I decided to make the multi-arm IK very basic. There are two arms, each with 25
+    joints, attached to the same root. The root is the red cube in the simulation.
+    At 6 seconds in to the example video, both arms start their IK solving and heading towards
+    their goals. They continue to do this in the video until 39 seconds in. At 30 seconds in,
+    you can see the blue arm attmepting to touch a target that is out of reach for it. It just
+    straightens the arm and gets as close as possible to touching it. Since both arms are coming
+    out of the same side of the root, if one can't touch it, neither can, so I do not do any
+    sort of check to determine which target is closer to which arm.
+  </p>
+  <h2>Joint Limits</h2>
+  <p>
+    This is another required feature, so I implemented it. In the example video given in the
+    introduction, joint limits were appplied. Specifically, it had joint limits in place so
+    that none of the joints would rotate more than 90 degrees. Here's a video of the
+    arms without joint limits, as you can see they are far more bendy and angular
+    when not given these constraints, particularly when the move back on themselves
+  </p>
+  <video width="800" controls>
+    <source src="NoAngleLimit.mp4" type="video/mp4" />
+  </video>
+  <p>
+    A particularly good example of that sort of more angular look is 12 seconds in on the blue
+    arm. It basically crosses over itself to get to the ball. It looks a lot less realistic
+    than when joint limits are applied.
+  </p>
+  <h2>User Interaction</h2>
+  <p>
+    As I mentioned in the general features section, there are a few different controls a user
+    can use to mess around with the IK a bit. Hitting spacebar allows you to pause and turn back
+    on the simulation. Hitting 'f' allows you to re-randomize the targets the arms are going for.
+    Hitting 'r' allows you to reset the simulation. Finally, you can click and drag on the targets
+    to move them around. All of those controls can be seen in the following video
+  </p>
+  <video width="800" controls>
+    <source src="UserInteractions.mp4" type="video/mp4" />
+  </video>
+  <p>
+    Between 0:04 and 0:12, you see me pausing and unpausing the simulation multiple times using the
+    space bar. Between 0:12 and 0:30, you can see me randomizing the targets multiple times by hitting
+    the 'f' key. At 0:30, you can see me hit 'r' to reset the simulation. Finally, between 0:36 and
+    0:48, you can see me moving a target around.
+  </p>
+  <h2>3D Simulation and Rendering</h2>
+  <p>
+    As mentioned in the introduction, the simulation is rendered in 3D. You have a camera you can
+    move around to look at everything, there's lighting and so on. The previous sections didn't do an amazing
+    job of showing off moving the camera, so the following video is just me moving the camera around the
+    environment while the simulation runs, so you can see it in action
+  </p>
+  <video width="800" controls>
+    <source src="3D.mp4" type="video/mp4" />
+  </video>
 
-    <h1>Code</h1>
-    <p>
-      The simulation was written using
-      <a href="https://processing.org/">processing</a> and
-      <a
-        href="https://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html"
-        >PriorityQueue</a
-      >
-      from the <a href="https://www.java.com/en/">Java</a> standard library. The
-      test harness for this project was used as a base for creating the
-      simulation, but it has been significantly modified. Almost none of the
-      original code of the test harness remains.
-    </p>
-    <p>
-      The source code can be
-      <a href="https://github.com/GarrettU27/CSCI5611-Project1">
-        found on GitHub here</a
-      >. You can also
-      <a href="https://github.com/GarrettU27/CSCI5611-Project1/zipball/master">
-        download a ZIP of the repository here.
-      </a>
-    </p>
+  <h1>Code</h1>
+  <p>
+    The simulation was written using
+    <a href="https://processing.org/">processing</a>. The example <a
+      href="https://canvas.umn.edu/courses/333142/files?preview=30097263">camera</a>
+    code from class was used to implement the camera. The Vec3 library used in the different processing examples in
+    class was also
+    used.
+  </p>
+  <p>
+    I took code from <a href="https://kougaku-navi.hatenablog.com/entry/20160102/p1">this tutorial</a>. Specifically, I
+    used the getEyePosition,
+    unProject, getUnProjectedPointOnFloor and getMatrixLocalToWindow functions in my own logic to handle the mouse
+    picking required to drag
+    targets around. I converted these functions from using PVectors to use Vec3s, but made hardly any modifications
+    besides that. These functions
+    mainly deal with pulling the projection matrix information out of processing and applying them to the 2D coordinates
+    of your mouse, so you
+    can use your mouse position in 3D space, which is particularly important for ray casting mouse picking.
+  </p>
+  <p>
+    The source code can be
+    <a href="https://github.com/GarrettU27/CSCI5611-Project3">
+      found on GitHub here</a>. You can also
+    <a href="https://github.com/GarrettU27/CSCI5611-Project3/zipball/master">
+      download a ZIP of the repository here.
+    </a>
+  </p>
 
-    <h1>Difficulties</h1>
-    <h2>A* With Arbitrary Start and Goal Positions</h2>
-    <p>
-      Implementing A* normally was not too problematic for me. You just roughly
-      follow the pseudo code with your own logic and you end up with the proper
-      results. But, the arbitrary start and goal positions meant that I had to
-      slighly modify A* to get the results I wanted. While you can just add the
-      start and goal positions as nodes in the PRM, and then re-generate the
-      connections for the graph, that is really slow, and was not fast enough
-      for the speeds required for this simulation.
-    </p>
-    <p>
-      Instead, my solution to get A* to work ultimately looked like the
-      following. First, determine all the nodes that could be a neighbor of the
-      start, and add them to the fringe (open set in A*). These nodes had to
-      have the cost for going from the start to them added on initially, as
-      well. Basically, instead of starting the algorithm with one node, we start
-      the algorithm like we're already one step in, and we start with several
-      nodes. Second, determine all the nodes that could be a neighbor of the
-      goal and add them to a list of goal nodes. Third, whenever a goal node is
-      encountered, add a node to the fringe with the proper cost to go to the
-      goal, and an ID that marks it as the goal node. Finally, whenever a node
-      is pulled off the fringe with the goal node ID, end the algorithm.
-    </p>
-    <p>
-      Overall, this works basically the same as how A* runs normally, but I
-      avoided creating new nodes for the start and goal and regenerating all the
-      edges in the graph. This sort of solution was kind of discussed in class,
-      but even with the class discussion and my own understanding of the
-      solution, it still took a while to debug and get it working.
-    </p>
-    <h2>Smooth and Collision Free Motion</h2>
-    <p>
-      Simulating smooth motion was not too difficult, as that is something we've
-      covered in class and in class activities before. However, smooth, weighty
-      motion that looks good is not very good at following a path. An agent with
-      that sort of motion frequently overshoots corners, is forced to back track
-      and hits obstacles. It took a lot of work and tinkering to figure out how
-      to make motion that looks good and natural while still following the path
-      for the most part. Ultimately, the fix that helped the most in making it
-      happen was forcing the agent to slow to some minimum velocity when it
-      reached corners. Thus, it could still have weighty movement, but it
-      couldn't overshoot corners, which was the main problem.
-    </p>
-    <p>
-      There was also issues with the agent fidgeting and jiggling sporadically
-      and randomly, but forcing the acceleration to be over some minimum amount
-      and changing the renderer from the default to P2D fixed up most of those
-      issues.
-    </p>
-    <h2>Texture Rendering</h2>
-    <p>
-      Processing loads images in as an array of pixels to then be rendered as
-      textures or plain images. As can be imagined, large images have a lot of
-      pixels and thus take a significant amount of processing power. I didn't
-      realize this at first, and tried to load an image that was 3000 by 5000
-      pixels. The performance was terrible and it took me a significant amount
-      of time to figure out why. After that, resizing the image while
-      maintaining a good resolution was a concern, but luckily Windows' Photos
-      app was able to resize the image for me properly.
-    </p>
+  <h1>Difficulties</h1>
+  <h2>IK Solver</h2>
+  <p>
+    This was, in part, difficult because it is a legitimately difficult problem.
+    But, it was mostly difficult because I wanted to have obstacle avoidance.
+    When I started the project, I skimmed through the different optional features
+    we could implement for our IK solver. I like to try and choose what I'm going
+    to do up front, because I like to design my code in a way that it will support
+    the extra, optional features I add after I get the basic, required features working.
+    One of the features I was interested in adding was "Obstacles", which requires
+    you to detect and prevent any collisions between the skeleton and obstacles.
+    I really liked project 1, and it seemed like I could use my code from that
+    project to make this obstacle avoidance happen. So, I took a lot of the code
+    from project 1, put it into this project, set the goal of my IK solver to be
+    the agent moving around the obstacles, and it didn't work!
+  </p>
+  <p>
+    The agent was only planning to avoid obstacles as if it was a point. My arm
+    would have to consider all the joints and links behind the goal if it would
+    ever hope to avoid obstacles. I was confused as to where to go from here, so
+    I decided to look into research papers that discussed how to do obstacle avoidance
+    with CCD, which was the IK solver I had implemented at that time. Most of the
+    papers went over my head and I had a hard time interpreting what exactly they
+    were suggesting I do to avoid obstacles. However, one paper, which I don't have
+    the link to anymore, suggested a simple, yet fast solution for obstacle avoidance
+    that was demonstrated in another paper.
+  </p>
+  <p>
+    Specifically, it was this paper: <a
+      href="https://journals.sagepub.com/doi/full/10.1177/1729881421996148">Collision-free kinematics for
+      hyper-redundant manipulators in dynamic scenes using optimal velocity obstacles</a>.
+    Which is, of course, the most fascinating, readable and memorable title I've ever seen. I spent somewhere
+    around 5 hours carefully combing through this paper to figure out exactly how the algorithm it was suggesting
+    worked. And, while I did figure out how it worked, I was not able to implement it for this project. Though, it's not
+    because
+    the solution is too complicated. At least, it's not too complicated in concept. Ultimately, it is pretty simple once
+    you
+    understand it. You model each link in the arm as an ellipsis and you model every obstacle that's
+    near or coming towards it as a sphere. You take the Minkowski sum between the ellipsis and the sphere and you shoot
+    rays
+    through it to create a velocity obstalce (just like how we created a velocity obstacle in class, but this is done in
+    3D).
+    If the relative velocity between one of the arm's links and the obstacle falls in that velocity obstacle, then you
+    know
+    the two are going to collide. To fix that, you find a vector that points you to the nearest point on the boundary of
+    the
+    velocity obstacle, make a plane normal to the velocity obstacle at that point, and find the closest point on that
+    plane
+    that fits all your constraints for the IK solver (joint limits, link length limits, etc.)
+  </p>
+  <p>
+    I have no trouble understanding how you would do that, but there are a couple of problematic steps in here that are
+    hard
+    to implement. The big one is finding the Minkowski sum between two objects. I did find a couple of papers that
+    could've
+    possibly helped me, but they were pretty complex themselves. One was a paper called <a
+      href="https://cs.gmu.edu/~jmlien/papers/lien-PointBasedMinkowskiSum.pdf">Point-Based Minkowski Sum Boundary</a>
+    where the author claims that "An important feature of our method is its straightforward implementation and
+    parallelization." While this may
+    be true for most 3D applications, it's not true for processing. In processing, you don't exactly have all the points
+    that make up the spheres
+    you output to screen, much less any other shape you decide to draw. I'm sure there is a way to coax that information
+    out of processing,
+    but it seemed like a pain to do, and this still would leave me with a bunch of points that I would basically have to
+    check each time I want
+    to check for obstacles, which would be quite bad for performance.
+  </p>
+  <p>
+    So, intead I looked for a paper that would give me a closed-form expression for the Minkowski sum. After all, we
+    only need to find
+    the Minkowski sum between a sphere and an ellipsoid, so maybe there exists some formula to determine the sum for
+    such
+    simple objects.
+    I ended up finding a paper that described exactly that. <a
+      href="https://link.springer.com/article/10.1007/s10711-014-9981-3">Closed-form characterization of the Minkowski
+      sum and difference of two ellipsoids</a>
+    describes a closed form expression for the Minkowski sum and difference of two ellipsoids. The name's pretty
+    descriptive. However,
+    the math looked complicated and painful, and, in my skimming of the paper, I didn't see any formula that expressed
+    the boundary of the Minkowski sum,
+    which was important to the algorithm.
+  </p>
+  <p>
+    After putting in so much research and finding viable solutions, I realized that implementing this velocity obstacle
+    solution was
+    not an easy feat, and was maybe too ambitious for the scope of this project. But, having put so much effort into
+    researching FABRIK, I
+    was fascinated with the algorithm. So, I found the original research paper that introduced FABRIK: <a
+      href="https://www.sciencedirect.com/science/article/abs/pii/S1524070311000178">FABRIK: A fast, iterative solver
+      for the Inverse Kinematics problem</a>
+    . Not only was this paper's name actually human readable, it also was really well-written. So, I decided to
+    implement FABRIK in my own project using
+    Algorithm 1 from the paper as a guide, and it worked first try.
+  </p>
+  <p>
+    After that, the professor discussed FABRIK in class and how it was very easily extended to 3D. I noticed that having
+    my project in 3D
+    could net me 20 points, so I decided to switch my Vec2s for Vec3s in the project and render everything in 3D, and it
+    also worked very
+    smoothly. Overall, the ending to making the IK solver was very smooth, but I turned what should've been a simple,
+    easy 1 hour process into a
+    prolonged, painful 11 hour process of boring papers and many headaches. I guess the difficulty came more from
+    within.
+    But that's not to say I got nothing out of it. I think that FABRIK produces genuinely more natural, better looking
+    movement than CCD
+    does. Beyond that, after I implemented FABRIK, I had a lot less issues with my IK solver bugging out. I had, and
+    still have some, but
+    not that many, whereas CCD was bugging out almost constantly.
+  </p>
+  <h2>Joint Limits</h2>
+  <p>
+    As I mentioned in the previous section, I ulimately decided to implement FABRIK as my IK solver. Unlike
+    CCD, which modifies the angle of each joint, FABRIK modifies the position of each joint, meaning that adding
+    joint limits requires you to specifically go out of your way to calculate the angle, and to then modify it as
+    required.
+    Further, I decided to move my project into 3D, and working with angles in 3D can be strange. Luckily, the original
+    research paper for FABRIK mentioned that joint limits can be applied at every step in the process and it should
+    work properly, so I just checked the changed joint angle everytime I updated a joint position, and made the changes
+    as needed.
+  </p>
+  <p>
+    The problem wasn't with getting the joint limits to work with the algorithm, it was getting the joint limits to work
+    at
+    all in 3D. There are many different types of joints that you can model using different cones and they all seem to
+    have
+    very complicated equations for determining whether a vector falls within them or not. Ultimately I decided to
+    implement what
+    I believe to be a ball and socket joint. This joint has limits that look like a normal cone, so it is easier to
+    implement than
+    others. You don't have to worry about which direction the joint is being bent in, you just have to worry about how
+    much it's being bent.
+  </p>
+  <p>
+    However, even with this simplification, it still took a few tries before I got something that worked. Ultimately,
+    the solution looks like
+    the following:
+  </p>
+  <ol>
+    <li>Find the vectors that represent the two links surrounding the joint</li>
+    <li>Take the dot product of the two vectors and divide by their magnitudes. Then, take the arc cosine of that value
+      to find the angle
+      between the two vectors
+    </li>
+    <li>Determine if this angle is outside of the joint limits</li>
+    <li>If it is, take the cross product of the two vectors and divide it by its magnitude to find the axis of rotation
+      as a unit vector</li>
+    <li>Find the difference between the current angle and the joint limit</li>
+    <li>Use that axis of rotation, the current link's vector, and the axis of rotation as a unit vector in <a
+        href="https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula">Rodrigues' Rotation Formula</a>
+      to rotate the current link's vector to within the joint limits</li>
+  </ol>
+  <p>
+    This was mainly inspired by our discussion of rotating 3D vectors in class, but, obviously, I had to improvise a bit
+    and do some math
+    to eventually to get to what I believe to be a correct answer. This took awhile to do, but I felt accomplished when
+    I got it to work and I'm
+    pretty happy with the result
+  </p>
+  <h2>Mouse Picking</h2>
+  <p>
+    After I had implement joint limits, multiple arms and had simulated it all in 3D, I had to cover for 10 final points
+    in my project.
+    Ultimately, my options were "Skinned Models", "IK+ Character Animation", "Moving IK" or "User Interaction". I didn't
+    want to do
+    "Skinned Models" or "IK+ Character Animation", because it involved using Unity. I've only used Unity a little bit in
+    the past, but
+    I generally don't enjoy working in it, so I wanted to avoid that. "Moving IK" was kind of interesting, but the
+    objective was so vague
+    that I wasn't sure exactly what I was supposed to be doing. I don't know how to move a root in a "natural looking
+    fashion" and I don't know
+    why moving the root would not interact smoothly with the animation in the first place. So, that left me with one
+    option: "User Interaction"
+  </p>
+  <p>
+    Now, the instructions for "User Interaction" specifically state that you can't just give a user a bunch of discrete
+    controls to modify
+    the simulation, and the camera does not count for interaction. Considering how few moving parts there were in my
+    simulation, the only options
+    to add user interaction would be to allow the user to move the targets or to move the root. I thought moving the
+    targets would be more interesting,
+    so I decided to do that. However, there is a problem with doing continuous mouse controls in 3D, which I had ran
+    into last project. Your mouse interacts with the
+    screen in 2D, but the objects you are trying to affect and move, are in 3D. You have to be fancy with figuring out
+    what 3D objects a mouse might
+    be clicking on and in where you're going to move them, too. This problem is called mouse picking.
+  </p>
+  <p>
+    There are two common solutions to this problem. The first one is known as color picking. Whenever a mouse clicks a
+    part of the screen, you render
+    a little bit of the area around where the mouse clicked, check the color, and use the color to determine what you
+    have clicked. In practice,
+    this can get a lot fancier with people storing the picture in a completely different buffer and ensuring that every
+    object is uniquely colored,
+    but that's the basic gist of it. There's a popular picking library for processing, and, as far as I can tell, it
+    makes use of that sort of picking.
+  </p>
+  <p>
+    The second solution is known as raycast picking. Here, you determine what direction the mouse is clicking in 3D and
+    you extend that ray out forever.
+    You then see if any objects collide with that ray. If they do, they are picked by the mouse. This is the solution
+    that I decided to implement.
+    While it is more computationally expensive, it generally is more accurate and less finnicky than color picking. And,
+    since I was using a lighter
+    weight IK solver, and I was only trying to detect collisions with spheres, I thought the extra computational cost
+    would not be too noticeable.
+  </p>
+  <p>
+    However, projecting a 2D mouse point into 3D seems like it may be easy, but it's really not. A naive solution is to
+    just set the x and y to
+    be the mouse's x and y, then you just set the z coordinate to some arbitrary number. This doesn't work. It's not
+    even close. The point will
+    be going all over the place and it's lucky if it ever falls under your mouse. Instead, you have to realize that
+    there are three different
+    matrices being applied to the corodinate space of your simulation whenever you work in 3D. There is the modelling
+    transformation matrix, viewing
+    transformation matrix and the projection transformation matrix. All of these are 4x4 matrices and are multiplied
+    together and multiplied by
+    whatever (X, Y, Z) coordinates to find out where they will be positioned. Ultimately, you have to take the inverse
+    of all three of those matrices
+    and multiply it with the naive solution to get the actual solution. A problem with that, though, is that it's hard
+    to dig out information like
+    the projection transfromation matrix from processing. Ultimately, I ended up using some code from <a
+      href="https://kougaku-navi.hatenablog.com/entry/20160102/p1">this tutorial</a>
+    to get the matrices required.
+  </p>
+  <p>
+    With that out of the way, I now was able to get my mouse coordinates in 3D in the proper position. I was also able
+    to get my eye coordinates, or
+    the coordinates for the position of the camera. However, we still aren't done. Even though I can use the mouse and
+    eye coordinates to get the
+    ray we are casting, we still need to determine if that ray intersects anything. Luckily, this was a lot simpler.
+    There's a well-known and
+    well-defined equation for determining whether a ray and a sphere will ever interesect. <a
+      href="https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection">This Wikipedia article</a>
+    goes over the derivation. It was as simple as plugging the equation into the problem (not that simple, I messed up
+    some of the values I
+    needed to use for the equation and I spent an hour debugging it, but, in the end, it was as simple as plugging the
+    information I already
+    had into the equation).
+  </p>
+  <p>
+    But, wait! There's more! All we've done is calculate whether the mouse is clicking a sphere. After that, we need to
+    actually move the sphere
+    when the user drags their mouse around. There are two main ways I could see to do this. One would be to change the x
+    and y and then set the z
+    so that the sphere is always the same distance from the user. The other solution is to create a plane parallel to
+    the user's camera and that
+    bisects the sphere and to move the sphere along that plane. I thought the second solution was more intuitive for a
+    user to use, and there was
+    some code discussed in the previously mentioned tutorial that would be helpful for that, so I decided to go in that
+    direction.
+  </p>
+  <p>
+    After doing all the work to project a 2D mouse coordinate into 3D, the extra work to project that point onto a plane
+    in 3D is not too bad.
+    The tutorial discusses it, and it presents an equation for where that point should land. It also provides a
+    processing implementation
+    of this equation. Considering it's just a few dot products and other basic operations of some vectors, I didn't see any point
+    in trying to write the
+    function on my own, because it would come out almost exactly the same. The function that does this is called
+    getUnProjectedPointOnFloor().
+  </p>
+  <p>
+    Now, with that function available, it was as simple as calling the function with the mouse's x and y coordinates,
+    the center of the sphere,
+    and the normalized vector between the camera and the center of the sphere (the center of the sphere is a point in
+    the plane we are projecting to
+    and the normalized vector between the camera and the center of the sphere is the normal vector that defines the
+    plane). Whatever is calculated
+    is what the sphere's center is updated to.
+  </p>
+  <p>
+    This was painful, and a lot of work to understand and put everything together. However, it really doesn't look or
+    feel like it. Seeing someone
+    drag a 3D object around with a mouse is not something most would consider impressive or worth noting. However, it
+    takes quite a lot of vector and
+    matrix manipulation to make something so simple happen. It's pretty crazy, honestly.
+  </p>
 
-    <script src="" async defer></script>
-  </body>
+  <script src="" async defer></script>
+</body>
+
 </html>
